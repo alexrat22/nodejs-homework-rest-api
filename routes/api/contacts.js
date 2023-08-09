@@ -5,9 +5,15 @@ const { HttpError } = require("../../helpers");
 const Joi = require("joi");
 
 const addSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  phone: Joi.number().required(),
+  name: Joi.string().required().messages({
+    "any.required": "missing required name field",
+  }),
+  email: Joi.string().email().required().messages({
+    "any.required": "missing required email field",
+  }),
+  phone: Joi.number().required().messages({
+    "any.required": "missing required phone field",
+  }),
 });
 
 router.get("/", async (req, res, next) => {
@@ -48,9 +54,15 @@ router.post("/", async (req, res, next) => {
 router.put("/:contactId", async (req, res, next) => {
   try {
     const { error } = addSchema.validate(req.body);
+    const { name, email, phone } = req.body;
+
     if (error) {
-      throw HttpError(400, "missing fields");
+      if (!name && !email && !phone) {
+        throw HttpError(400, "missing fields");
+      }
+      throw HttpError(400, error.message);
     }
+
     const { contactId } = req.params;
     const result = await contacts.updateContact(contactId, req.body);
     if (!result) {
