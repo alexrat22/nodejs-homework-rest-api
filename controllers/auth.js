@@ -6,11 +6,14 @@ const { HttpError, ctrlWrapper } = require("../helpers");
 
 const register = async (req, res) => {
   const { email, password } = req.body;
+
   const user = await User.findOne({ email });
   if (user) {
     throw HttpError(409, "Email already in use");
   }
+
   const hashPassword = await bcrypt.hash(password, 10);
+
   const newUser = await User.create({ ...req.body, password: hashPassword });
   res.status(201).json({
     user: {
@@ -33,7 +36,7 @@ const login = async (req, res) => {
   }
 
   const payload = {
-    id: user.id,
+    id: user._id,
   };
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
