@@ -7,17 +7,13 @@ const { HttpError, ctrlWrapper } = require("../helpers");
 const register = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-
   if (user) {
     throw HttpError(409, "Email already in use");
   }
-
   const hashPassword = await bcrypt.hash(password, 10);
-
   const newUser = await User.create({ ...req.body, password: hashPassword });
-
   res.status(201).json({
-    email: newUser.email,
+    user: { email: newUser.email },
   });
 };
 
@@ -25,12 +21,12 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    throw HttpError(401, "Email or password invalid");
+    throw HttpError(401, "Email or password is wrong");
   }
 
   const passwordComrpare = await bcrypt.compare(password, user.password);
   if (!passwordComrpare) {
-    throw HttpError(401, "Email or password invalid");
+    throw HttpError(401, "Email or password is wrong");
   }
 
   const payload = {
@@ -40,7 +36,7 @@ const login = async (req, res) => {
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
   await User.findByIdAndUpdate(user._id, { token });
 
-  res.json({ token });
+  res.status(200).json({ token });
 };
 
 const getCurrent = async (req, res) => {
@@ -54,7 +50,7 @@ const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
 
-  res.json({
+  res.status(204).json({
     message: "Logout success",
   });
 };
