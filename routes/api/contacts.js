@@ -9,7 +9,7 @@ const {
   authenticate,
 } = require("../../middlewares");
 
-router.get("/", ctrlWrapper.getAllContacts);
+router.get("/", authenticate, ctrlWrapper.getAllContacts);
 
 router.get("/:contactId", authenticate, isValidId, ctrlWrapper.getContactById);
 
