@@ -3,7 +3,7 @@ const ctrlWrapper = (getAll) => {
     try {
       await getAll(req, res, next);
     } catch (error) {
-      // next(error);
+      next(error);
     }
   };
   return wrapper;
