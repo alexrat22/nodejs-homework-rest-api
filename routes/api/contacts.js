@@ -6,16 +6,23 @@ const {
   validateBody,
   isValidId,
   validateEmptyBody,
+  authenticate,
 } = require("../../middlewares");
 
-router.get("/", ctrlWrapper.getAllContacts);
+router.get("/", authenticate, ctrlWrapper.getAllContacts);
 
-router.get("/:contactId", isValidId, ctrlWrapper.getContactById);
+router.get("/:contactId", authenticate, isValidId, ctrlWrapper.getContactById);
 
-router.post("/", validateBody(schemas.addSchema), ctrlWrapper.addContact);
+router.post(
+  "/",
+  authenticate,
+  validateBody(schemas.addSchema),
+  ctrlWrapper.addContact
+);
 
 router.put(
   "/:contactId",
+  authenticate,
   isValidId,
   validateEmptyBody(schemas.addSchema),
   ctrlWrapper.updateContactById
@@ -23,11 +30,17 @@ router.put(
 
 router.patch(
   "/:contactId/favorite",
+  authenticate,
   isValidId,
   validateBody(schemas.updateFavoriteSchema),
   ctrlWrapper.updateStatusContact
 );
 
-router.delete("/:contactId", isValidId, ctrlWrapper.deleteContactById);
+router.delete(
+  "/:contactId",
+  authenticate,
+  isValidId,
+  ctrlWrapper.deleteContactById
+);
 
 module.exports = router;

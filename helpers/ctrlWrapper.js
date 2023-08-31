@@ -8,4 +8,5 @@ const ctrlWrapper = (getAll) => {
   };
   return wrapper;
 };
+
 module.exports = ctrlWrapper;
