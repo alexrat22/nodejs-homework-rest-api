@@ -24,6 +24,14 @@ const userSchema = new Schema(
       default: null,
     },
     avatarURL: String,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+    },
   },
   { versionKey: false }
 );
@@ -37,8 +45,14 @@ const authSchema = Joi.object({
   }),
 });
 
+const emailSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "any.required": "missing required password field",
+  }),
+});
+
 userSchema.post("save", handleMongooseError);
 
 const User = model("user", userSchema);
 
-module.exports = { User, authSchema };
+module.exports = { User, authSchema, emailSchema };
