@@ -47,7 +47,7 @@ const authSchema = Joi.object({
 
 const emailSchema = Joi.object({
   email: Joi.string().email().required().messages({
-    "any.required": "missing required password field",
+    "any.required": "missing required email field",
   }),
 });
 
